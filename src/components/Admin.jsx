@@ -20,6 +20,7 @@ import ContactUsTab from "./Contact/ContactUsTab";
 import BlogCommentsTab from "./comments/BlogCommentsTab";
 import UserProfileTab from "./UserProfile/UserProfileTab";
 import axios from "axios";
+import ServicesConsultation from "./consultations/ServicesConsultation";
 
 const DashboardCard = ({
   title,
@@ -66,9 +67,9 @@ const AdminPanel = () => {
     services: 0,
     blogs: 0,
     testimonials: 0,
-    comments: 0,
     contacts: 0,
     users: 0,
+    consultations: 0,
   });
 
   const toggleSidebar = () => {
@@ -83,22 +84,30 @@ const AdminPanel = () => {
     // Fetch real stats from backend
     const fetchStats = async () => {
       try {
-        // Example: GET /admin/stats returns { images, courses, services, blogs, testimonials, comments, contacts, users }
-        const res = await axios.get("/admin/stats", {
+        const res = await axios.get("/web/stats", {
           withCredentials: true,
         });
-        setStats(res.data);
+        const data = res.data.data || {};
+        setStats({
+          images: data.totalImages || 0,
+          courses: data.totalCourses || 0,
+          services: data.totalServices || 0,
+          blogs: 0,
+          testimonials: 0,
+          contacts: data.totalContacts || 0,
+          users: 0,
+          consultations: data.totalConsults || 0,
+        });
       } catch (err) {
-        // Optionally handle error, fallback to zeros
         setStats({
           images: 0,
           courses: 0,
           services: 0,
           blogs: 0,
           testimonials: 0,
-          comments: 0,
           contacts: 0,
           users: 0,
+          consultations: 0,
         });
       }
     };
@@ -114,6 +123,7 @@ const AdminPanel = () => {
     { id: "blogs", label: "Blogs", icon: FileText },
     { id: "testimonials", label: "Testimonials", icon: MessageSquare },
     { id: "contact-forms", label: "Contact Forms", icon: Mail },
+    { id: "consultations", label: "Consultation", icon: User },
     { id: "User-Profile", label: "User Profile", icon: Users },
   ];
 
@@ -227,18 +237,18 @@ const AdminPanel = () => {
                   onManage={() => handleManage("testimonials")}
                 />
                 <DashboardCard
-                  title="Comments"
-                  count={stats.comments}
-                  description="blog comments"
-                  icon={<MessageSquare size={24} className="text-pink-600" />}
-                  onManage={() => handleManage("blog-comments")}
-                />
-                <DashboardCard
                   title="Contact Forms"
                   count={stats.contacts}
                   description="form submissions"
                   icon={<Mail size={24} className="text-teal-600" />}
                   onManage={() => handleManage("contact-forms")}
+                />
+                <DashboardCard
+                  title="Consultation"
+                  count={stats.consultations}
+                  description="consultations"
+                  icon={<User size={24} className="text-pink-600" />}
+                  onManage={() => handleManage("consultations")}
                 />
                 <DashboardCard
                   title="Users"
@@ -258,8 +268,8 @@ const AdminPanel = () => {
         {activePage === "services" && <ServicesTab />}
         {activePage === "blogs" && <BlogsTab />}
         {activePage === "testimonials" && <TestimonialsTab />}
-
         {activePage === "contact-forms" && <ContactUsTab />}
+        {activePage === "consultations" && <ServicesConsultation />}
         {activePage === "User-Profile" && <UserProfileTab />}
       </div>
     </div>

@@ -61,10 +61,8 @@ const Login = () => {
 
         console.log("Login successful", adminDoc);
 
-        // Use setTimeout to ensure toast shows before redirect
-        setTimeout(() => {
-          navigate("/", { replace: true });
-        }, 1500);
+        // Redirect immediately after login
+        navigate("/", { replace: true });
       } else {
         toast.error(
           response.data?.message || "Login failed. Please try again."
